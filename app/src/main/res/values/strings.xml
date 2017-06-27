@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TestProj</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_first">FirstActivity</string>
+    <string name="title_activity_second">SecondActivity</string>
+    <string name="some_text">Some Text</string>
+    <string name="press_me">Press me</string>
+    <string name="title_activity_animating_toolbar_tab_layout_fab_status_bar_bg_colors">
+        AnimatingToolbarTabLayoutFabStatusBarBgColorsActivity
+    </string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+</resources>

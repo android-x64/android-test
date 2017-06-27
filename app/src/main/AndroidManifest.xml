@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.test.admin.testproj"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-sdk tools:overrideLibrary="android.support.test.uiautomator.v18"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <application
+        android:name=".App"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".tests.audio.AudioProgressiveDownload"
+            android:label="@string/app_name"/>
+        <activity
+            android:name=".tests.transitions.ActivityTransitions"
+            android:label="@string/title_activity_first"/>
+        <activity
+            android:name=".tests.transitions.SecondActivity"
+            android:label="@string/title_activity_second"/>
+        <activity android:name=".tests.libs.dagger2.Dagger2Test"/>
+        <activity android:name=".tests.libs.rx_android.RxAndroidTest"/>
+        <activity android:name=".tests.animation.SvgActivity"/>
+        <activity android:name=".tests.webapp.WebActivity"/>
+        <activity android:name=".tests.junit_learn.InstrumentedActivity"/>
+        <activity android:name=".tests.quick_algorithm_count_unique_cards.TestActivity"/>
+        <activity
+            android:name=".tests.animation.AnimatingToolbarTabLayoutFabStatusBarBgColorsActivity"
+            android:label="@string/title_activity_animating_toolbar_tab_layout_fab_status_bar_bg_colors"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+
+        <service
+            android:name=".tests.junit_learn.InstrumentedService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+    </application>
+
+</manifest>
