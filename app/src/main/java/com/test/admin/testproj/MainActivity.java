@@ -11,12 +11,19 @@ import android.widget.ListView;
 public class MainActivity extends ListActivity {
 
 
-    private String[] menu = new String[] {"SvgAnimation", "AnimatingToolbarTabLayoutFabStatusBarBgColorsActivity",
-            "AudioProgressiveDownload", "ActivityTransitions", "Dagger2", "RxAndroid", "WebApp", "UnitTests", "For testing"};
-    private String[] path = new String[] {"animation.SvgActivity", "animation.AnimatingToolbarTabLayoutFabStatusBarBgColorsActivity",
+    private String[] menu = new String[] {
+            "SvgAnimation", "AnimatingToolbarTabLayoutFabStatusBarBgColorsActivity",
+            "AudioProgressiveDownload", "ActivityTransitions", "Dagger2", "RxAndroid", "RxExamples",
+            "WebApp", "UnitTests", "CountUniqueCardsAlgorithm", "Compass", "Math and Physics"
+    };
+    private String[] path = new String[] {
+            "animation.SvgActivity", "animation.AnimatingToolbarTabLayoutFabStatusBarBgColorsActivity",
             "audio.AudioProgressiveDownload", "transitions.ActivityTransitions",
-            "libs.dagger2.Dagger2Test", "libs.rx_android.RxAndroidTest", "webapp.WebActivity",
-            "junit_learn.InstrumentedActivity", "test.TestActivity"};
+            "libs.dagger2.Dagger2TestActivity", "libs.rx_android.RxAndroidTestActivity",
+            "libs.rx_android_examples.RxExamplesTestActivity", "webapp.WebActivity",
+            "junit_learn.InstrumentedActivity", "algorithms.quick_algorithm_count_unique_cards.TestActivity",
+            "custom_views.compass.CompassActivity", "math_and_physics.MathAndPhysicsActivity"
+    };
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

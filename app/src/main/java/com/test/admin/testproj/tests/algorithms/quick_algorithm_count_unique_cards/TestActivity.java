@@ -1,4 +1,4 @@
-package com.test.admin.testproj.tests.quick_algorithm_count_unique_cards;
+package com.test.admin.testproj.tests.algorithms.quick_algorithm_count_unique_cards;
 
 import android.app.Activity;
 import android.os.Bundle;

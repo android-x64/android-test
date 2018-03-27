@@ -1,6 +1,6 @@
 package com.test.admin.testproj.tests.libs.rx_android.examples;
 
-import com.test.admin.testproj.tests.libs.rx_android.RxAndroidTest;
+import com.test.admin.testproj.tests.libs.rx_android.RxAndroidTestActivity;
 
 import dagger.Component;
 
@@ -9,5 +9,5 @@ import dagger.Component;
  */
 @Component(modules = RxExampleModule.class)
 public interface RxExampleComponent {
-    void inject(RxAndroidTest act);
+    void inject(RxAndroidTestActivity act);
 }

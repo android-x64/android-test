@@ -8,4 +8,22 @@
     <color name="blue">#0ff</color>
     <color name="pink">#FF00DC</color>
 
+    <!-- Compass view colors -->
+    <color name="compass_background_color">#F555</color>
+    <color name="compass_marker_color">#0f0</color>
+    <color name="compass_text_color">#AFFF</color>
+    <color name="adv_compass_text_color">#FFFF</color>
+    <color name="adv_compass_background_color">#F000</color>
+    <color name="adv_compass_marker_color">#FFFF</color>
+    <color name="adv_compass_shadow_color">#7AAA</color>
+    <color name="adv_compass_outer_border">#FF444444</color>
+    <color name="adv_compass_inner_border_one">#FF323232</color>
+    <color name="adv_compass_inner_border_two">#FF414141</color>
+    <color name="adv_compass_inner_border">#FFFFFFFF</color>
+    <color name="horizon_sky_from">#FFA52A2A</color>
+    <color name="horizon_sky_to">#FFFFC125</color>
+    <color name="horizon_ground_from">#FF5F9EA0</color>
+    <color name="horizon_ground_to">#FF00008B</color>
+    <!-- end -->
+    
 </resources>

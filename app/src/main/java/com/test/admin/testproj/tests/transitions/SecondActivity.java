@@ -1,13 +1,13 @@
 package com.test.admin.testproj.tests.transitions;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.test.admin.testproj.R;
 
-public class SecondActivity extends ActionBarActivity {
+public class SecondActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

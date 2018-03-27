@@ -1,6 +1,6 @@
 package com.test.admin.testproj.tests.libs.rx_android.grouping;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 /**
  * Count (group) same articles
@@ -42,15 +42,16 @@ public class Grouping {
 
     public Observable<ArticleQuantity> quantity(Observable<Article> observable) {
 
-        return observable.filter(article -> article.isInStock).
-                groupBy(this::articleIdFromTag)
+        return observable.filter(article -> article.isInStock)
+                .groupBy(this::articleIdFromTag)
                 // convert each group to a new observable
                 // group type: Observable<GroupedObservable<String, Article>>
-                .flatMap(group -> //GroupedObservable<String, Article>
+                .flatMap(group ->  //GroupedObservable<String, Article>
                         // each item in the group is converted to ArticleQuantity
-                        group.map(articleInfo -> new ArticleQuantity(group.getKey(), 1)).
+                        group.map(article -> new ArticleQuantity(group.getKey(), 1))
                         // then these items are reduced to a single item per group
-                        reduce((q1, q2) -> new ArticleQuantity(q1.articleId, q1.quantity + q2.quantity))
+                        .reduce((q1, q2) -> new ArticleQuantity(q1.articleId, q1.quantity + q2.quantity))
+                        .toObservable()
                 );
     }
 
@@ -70,8 +71,8 @@ public class Grouping {
     public Observable<ExpectedStock> expectedStock(Observable<Article> articles) {
         Observable<Article> observable = articles.publish().autoConnect(2);
 
-        return Observable.combineLatest(rfIdTags(observable).toList(),
-                    quantity(observable).toList(), ExpectedStock::new);
+        return Observable.combineLatest(rfIdTags(observable).toList().toObservable(),
+                    quantity(observable).toList().toObservable(), ExpectedStock::new);
     }
 
 

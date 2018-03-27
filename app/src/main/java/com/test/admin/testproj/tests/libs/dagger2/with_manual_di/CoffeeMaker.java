@@ -1,10 +1,8 @@
 package com.test.admin.testproj.tests.libs.dagger2.with_manual_di;
 
 import com.test.admin.testproj.tests.libs.dagger2.Coffee;
-import com.test.admin.testproj.tests.libs.dagger2.ElectricHeater;
 import com.test.admin.testproj.tests.libs.dagger2.Heater;
 import com.test.admin.testproj.tests.libs.dagger2.Pump;
-import com.test.admin.testproj.tests.libs.dagger2.Thermosiphon;
 
 /**
  * With Manual DI

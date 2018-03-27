@@ -14,7 +14,7 @@ public class CoffeeMaker {
     private final Pump pump;
 
     public CoffeeMaker() {
-        heater = new ElectricHeater();
+        heater = new ElectricHeater(70);
         pump = new Thermosiphon(heater);
     }
 

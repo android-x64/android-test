@@ -2,17 +2,16 @@ package com.test.admin.testproj.tests.transitions;
 
 import android.content.Intent;
 import android.os.Build;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.test.admin.testproj.R;
-import com.test.admin.testproj.tests.transitions.SecondActivity;
 
-public class ActivityTransitions extends ActionBarActivity implements View.OnClickListener {
+public class ActivityTransitions extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -5,9 +5,12 @@ import android.util.Log;
 import com.test.admin.testproj.tests.libs.rx_android.models.Beer;
 import com.test.admin.testproj.tests.libs.rx_android.utils.Network;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+
 
 /**
  * ReplaySubject - re-emits all. It emits all the items of the source Observable, regardless of when the subscriber
@@ -54,5 +57,24 @@ public class Caching {
 
         cached.subscribe(beer -> Log.e("WWW", "WWW beer=" + beer));
         cached.subscribe(beer -> Log.e("WWW", "WWW beer=" + beer));
+    }
+
+    /**
+     * Use of the cache method, so that the Single instance keeps its result,
+     * once it was successful for the first time.
+     */
+    public static void cachExample_2() {
+        Single<List<Beer>> single = Network.getBeers();
+
+        // cache the result of the single, so that the web query is only done once
+        Single<List<Beer>> cachedSingle = single.cache();
+
+        cachedSingle.subscribe((beers, throwable) -> {/* ... */});
+
+        //showBeersInATable(cachedSingle);
+
+        cachedSingle.subscribe((beers, throwable) -> {/* ... */});
+
+        //anotherMethodThatsSupposedToSubscribeTheSameSingle(cachedSingle);
     }
 }

@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.RxCompoundButton;
-import com.jakewharton.rxbinding.widget.RxTextView;
-import com.test.admin.testproj.App;
+import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.RxCompoundButton;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.test.admin.testproj.R;
 import com.test.admin.testproj.tests.libs.rx_android.examples.RxExampleExecutor;
+import com.test.admin.testproj.tests.libs.rx_android.examples.RxExample_1;
 import com.test.admin.testproj.tests.libs.rx_android.models.Beer;
 import com.test.admin.testproj.tests.libs.rx_android.utils.Network;
 
@@ -19,27 +19,28 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
-import static rx.android.schedulers.AndroidSchedulers.mainThread;
-import static rx.schedulers.Schedulers.io;
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
+
 
 /**
  * Created on 14.08.2015.
  */
-public class RxAndroidTest extends Activity {
+public class RxAndroidTestActivity extends Activity {
 
-    @Inject RxExampleExecutor executor;
-    private CompositeSubscription mSubscriptions;
+    @Inject RxExampleExecutor executor = new RxExample_1();
+    private CompositeDisposable mDisposables;
     private Observable<List<Beer>> beerCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rx_test);
-        ((App)getApplication()).getRxExampleExecutor().inject(this);
+//        ((App)getApplication()).getRxExampleExecutor().inject(this);
         executor.execute();
 
         setupRxBinding();
@@ -67,7 +68,7 @@ public class RxAndroidTest extends Activity {
             beerCall = Network.searchBeer("Piwoteka").cache();
         }
 
-        beerCall.subscribeOn(io())
+        beerCall.subscribeOn(Schedulers.io())
                 .observeOn(mainThread())
                 .subscribe(this::showBeers);
     }
@@ -76,30 +77,30 @@ public class RxAndroidTest extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         //Unsubscribe to free references.
-        if (mSubscriptions != null) {
-            mSubscriptions.clear();
-            mSubscriptions = null;
+        if (mDisposables != null) {
+            mDisposables.clear();
+            mDisposables = null;
         }
     }
 
     private void setupRxBinding() {
-        Subscription s1 = RxView.clicks(findViewById(R.id.btn_rx_binding_test))
+        Disposable d1 = RxView.clicks(findViewById(R.id.btn_rx_binding_test))
                 .scan(0, (integer, click) -> integer + 1) // running count
                 .map(i -> Integer.toString(i)) // int to string
-                .subscribe(RxTextView.text((TextView) findViewById(R.id.txt_rx_binding_test)));
+                .subscribe(RxTextView.text(findViewById(R.id.txt_rx_binding_test)));
 
-        //we have a text field, which is used as search input, do we want to launch a new query every time
+        // we have a text field, which is used as search input, do we want to launch a new query every time
         // the user enters some text or removes some text? No, typically we don’t care about every individual character,
         // so we want to wait a little bit (1 second in this example) before this user has eventually stopped typing
         // and now we want to you know to do the actual query.
-        Subscription s2 = RxTextView.textChanges((TextView) findViewById(R.id.et_rx_binding_test))
+        Disposable d2 = RxTextView.textChanges(findViewById(R.id.et_rx_binding_test))
                 .subscribeOn(mainThread()) // on ui
                 .debounce(1, TimeUnit.SECONDS, mainThread()) // delay emission;
                 .flatMap(query -> Network.searchBeer(query.toString()))
                 .observeOn(mainThread()) // to ui
                 .subscribe(this::showBeers);
 
-        mSubscriptions = new CompositeSubscription(s1, s2);
+        mDisposables = new CompositeDisposable(d1, d2);
     }
 
     private void showBeers(List<Beer> beers) {}

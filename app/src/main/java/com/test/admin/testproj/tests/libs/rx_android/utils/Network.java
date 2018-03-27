@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import rx.Observable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+
 
 public class Network {
     public static Beer getBeer(Integer id) {
@@ -19,7 +21,7 @@ public class Network {
         //some network request
         return Observable.create(subscriber -> {
             subscriber.onNext(new Beer(new Random().nextFloat()));
-            subscriber.onCompleted();
+            subscriber.onComplete();
         });
     }
 
@@ -27,7 +29,12 @@ public class Network {
         //some network request
         return Observable.create(subscriber -> {
             subscriber.onNext(new ArrayList<Beer>());
-            subscriber.onCompleted();
+            subscriber.onComplete();
         });
+    }
+
+    public static Single<List<Beer>> getBeers() {
+        //some network request
+        return Single.create(emitter -> emitter.onSuccess(new ArrayList<Beer>()));
     }
 }
