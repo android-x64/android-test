@@ -53,6 +53,7 @@
 
         <activity android:name=".tests.custom_views.compass.CompassActivity"/>
         <activity android:name=".tests.math_and_physics.MathAndPhysicsActivity"/>
+        <activity android:name=".tests.kotlin.LearnKotlinActivity"/>
     </application>
 
 </manifest>

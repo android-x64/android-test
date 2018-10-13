@@ -1,0 +1,14 @@
+- Getting the view’s width and height in the onCreate() method
+
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "view has width: "+view.getWidth() +
+                    " and height: "+view.getHeight()); // Correct width and height
+         } });
+
+- Removing Logs from release apk, add to proguard next rule:
+
+        -assumenosideeffects class android.util.Log {
+            public static *** d(...);
+        }

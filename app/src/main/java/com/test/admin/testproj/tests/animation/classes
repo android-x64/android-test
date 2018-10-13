@@ -1,0 +1,14 @@
+ViewStub - lazy load your views.
+
+AnimationUtils
+TextSwitcher
+ImageSwitcher
+LayoutAnimationController - to animate a layout’s or a ViewGroup’s children.
+AnimationSet
+Animation
+AlphaAnimation
+TranslateAnimation
+
+ObjectAnimator
+
+Different Interpolators
