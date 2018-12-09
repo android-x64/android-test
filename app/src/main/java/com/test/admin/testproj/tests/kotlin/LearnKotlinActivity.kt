@@ -1,34 +1,54 @@
 package com.test.admin.testproj.tests.kotlin
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.test.admin.testproj.R
 import com.test.admin.testproj.tests.kotlin.classes.*
+import com.test.admin.testproj.tests.kotlin.coroutines.examples.testComputeSum
+import com.test.admin.testproj.tests.kotlin.coroutines.postItem
+import com.test.admin.testproj.tests.kotlin.coroutines.startRunBlocking
+import com.test.admin.testproj.tests.kotlin.coroutines.testAsync
+import com.test.admin.testproj.tests.kotlin.coroutines.testScopes
 import com.test.admin.testproj.tests.kotlin.generics.GenericRepository
 import com.test.admin.testproj.tests.kotlin.generics.Model
 import com.test.admin.testproj.tests.kotlin.interfaces.Bird
+import com.test.admin.testproj.tests.kotlin.operator_overloading.OperOverloadingClass
 import kotlinx.android.synthetic.main.activity_learn_kotlin.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.math.BigInteger
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
-import java.util.Locale.filter
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.collections.HashSet
-import kotlin.collections.LinkedHashSet
-import kotlin.math.sqrt
+import kotlin.concurrent.withLock
+import kotlin.math.abs
 
 class LearnKotlinActivity : AppCompatActivity() {
 
+    //region Late Initialization
+    lateinit var title: String
+    //endregion
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_learn_kotlin)
 
-        textView.text = "Learn Kotlin"
+        // check if "lateinit" property was initialized
+        // "this::title" - property reference
+        if (this::title.isInitialized) {
+
+        }
+
+        title = "Learn Kotlin"
+        textView.text = title
+
 
         //variables()
         //strings()
@@ -39,8 +59,10 @@ class LearnKotlinActivity : AppCompatActivity() {
         //looping()
         //testFunctions()
         //extensionsTest()
+        //lambdaWithReceivers()
+        //invokingInstances()
         //testCollections()
-        //lazyEvaluationWithSequences()
+        //sequences()
         //exceptionHandling()
         //classesTest()
         //enumClasses()
@@ -52,10 +74,13 @@ class LearnKotlinActivity : AppCompatActivity() {
         //tuplesAndDestructuringDeclaration()
         //generics()
         //typeAlias()
-        functionAlias()
+        //functionAlias()
         //bitwiseFunctions()
         //standardLibraryFunctions()
+        coroutines()
+        //testCoroutineExamples()
     }
+
 
     //region Visibility modifiers (4)
 
@@ -107,6 +132,12 @@ class LearnKotlinActivity : AppCompatActivity() {
         //region Casting
         print("3.14 to Int: " + (3.14.toInt()))
         //endregion
+
+        //region Lazy variable
+        // Initializing immutable variable in a lazy way.
+        // It will be initialized when "lazyInit" variable is called
+        val lazyInit: Int by lazy { 10 }
+        //endregion
     }
     //endregion
 
@@ -135,6 +166,22 @@ class LearnKotlinActivity : AppCompatActivity() {
 
         // Containing
         print("str1 contains random: ${str1.contains("random")}")
+
+        // Sorting chars
+        val str3 = "random"
+        val sorted = str3.toCharArray().sortedArray()
+
+        str3.substring(0..1)
+
+        // Build String
+        val s = buildString {
+            appendln("Alphabet:")
+            for (c in 'a'..'z') {
+                append(c)
+            }
+        }
+
+
     }
     //endregion
 
@@ -322,6 +369,11 @@ class LearnKotlinActivity : AppCompatActivity() {
         } while (i < 10 && y == null)
 
         var array1: Array<Int> = arrayOf(3, 6, 9)
+
+        for (i in (array1.size - 1) downTo 0) {
+            print("DownTo Array1: ${array1[i]}")
+        }
+
         // iterate for the indices
         for (i in array1.indices) {
             print("Array1: ${array1[i]}")
@@ -394,14 +446,14 @@ class LearnKotlinActivity : AppCompatActivity() {
 
     // TailRec functions. "tailrec" is used to avoid StackOverflowError exception
     // calculate factorial with tail recursion without affecting the Stack memory
-    private fun factorial(x: Int): Int {
-        tailrec fun factTail(y: Int, z: Int): Int {
-            if (y == 0) {
+    private fun factorial(x: Int): BigInteger {
+        tailrec fun factTail(y: BigInteger, z: BigInteger): BigInteger {
+            if (y == 0.toBigInteger()) {
                 return z
             }
-            return (factTail(y - 1, y * z))
+            return (factTail(y - 1.toBigInteger(), y * z))
         }
-        return factTail(x, 1)
+        return factTail(x.toBigInteger(), 1.toBigInteger())
     }
 
     // get Fibonacci number at specified position using with tail recursion without affecting the Stack memory
@@ -428,6 +480,17 @@ class LearnKotlinActivity : AppCompatActivity() {
 
         // use "::" to reference a function by name, the same as in Java(this::multiply3Func)
         mathOnList(numList, ::multiply3Func)
+    }
+
+    private fun higherOrderFunctionExample4NullableLambda() {
+        var f: (() -> Int)? = null
+        // invoking nullable lambda
+        // 1.check for null
+        if (f != null) {
+            f()
+        }
+        // or 2. Use safe access syntax
+        f?.invoke()
     }
 
     private fun multiply3Func(num: Int) = num * 3
@@ -517,8 +580,27 @@ class LearnKotlinActivity : AppCompatActivity() {
     // 'noinline' keyword can be used in scenarios where we have multiple lambdas
     private inline fun inlineFun3(noinline op1: () -> Unit, op2: () -> Unit) {
         print("Noinline before op1()")
-        op1()
+        // Inlinable lambdas(op2) can only be called inside the inline functions or passed
+        // as inlinable arguments, but noinline ones can be manipulated in any way we like:
+        // stored in fields, passed around etc.
+        val o1 = op1
+        o1()
         print("Noinline after op1()")
+        // but we can't save Inlinable lambda to a variable:
+        // val o2 = op2
+        op2()
+    }
+
+    // 'crossinline' says, that we are not allowed non-local returns.
+    // Some inline functions may call the lambdas passed to them as parameters not directly
+    // from the function body, but from another execution context, such as a local object or
+    // a nested function. In such cases, non-local control flow is also not allowed in the lambdas.
+    // To indicate that, the lambda parameter needs to be marked with the 'crossinline' modifier
+    private inline fun inlineFun4(crossinline op1: () -> Unit, op2: () -> Unit) {
+        print("Crossinline before op1()")
+        val f = Runnable { op1() }
+
+        print("Crossinline after op1()")
         op2()
     }
 
@@ -536,7 +618,7 @@ class LearnKotlinActivity : AppCompatActivity() {
         val multiply = {num1: Int, num2: Int -> {num1 * num2}}// define function literals
         print("multiply = ${multiply(5, 6)}")
 
-        print("factorial 6 = ${factorial(6)}")
+        print("factorial 30 = ${factorial(30)}")
 
         // without "tailrec" the function will throw StackOverflowError exception
         print("FibonacciNumber 10000: ${getFibonacciNumber(10_000,
@@ -595,9 +677,15 @@ class LearnKotlinActivity : AppCompatActivity() {
         }
 
 
+        // Reference to function
+        val refToF = ::multiply3Func
+        refToF(5)
+
+
         higherOrderFunctionExample1()
         higherOrderFunctionExample2()
         higherOrderFunctionExample3()
+        higherOrderFunctionExample4NullableLambda()
     }
 
     //endregion
@@ -609,9 +697,9 @@ class LearnKotlinActivity : AppCompatActivity() {
     private fun String.encode(shift: Int) =
             String(this.map { it + shift }.toCharArray())
 
-    // Extension property
-    private val String.lastChar:
-            Char get() = get(length - 1)
+    // Extension property - can't have any 'backing' field and initialization (init) section
+    private val String.lastChar: Char
+        get() = get(length - 1)
 
     // Infix function (must operate on two parameters).
     // All Infix functions are extension functions BUT
@@ -634,16 +722,115 @@ class LearnKotlinActivity : AppCompatActivity() {
 
     //endregion
 
+    //region Lambda Extension (or Lambda With Receiver) and Invoking Instances
+
+    // allows to create very fluent expressive DSL
+
+    class Status(var code: Int, var description: String)
+    class Request(val method: String, val query: String, val contentType: String)
+    class Response(var contents: String, var status: Status) {
+
+        fun status(status: Status.() -> Unit) {}
+    }
+
+    class ResponseImproved(var contents: String, var status: Status) {
+
+        // to invoke instance
+        operator fun invoke(statusLambda: Status.() -> Unit) {
+            print("InvokingInstances, ResponseImproved")
+            statusLambda(this.status) // or we can call this.status.statusLambda()
+
+        }
+    }
+
+    class RouteHandler(val request: Request, val response: Response) {
+
+        fun response(response: Response.() -> Unit) {}
+    }
+
+    class RouteHandlerImproved(val request: Request, val response: ResponseImproved) {}
+
+    class InvokingInstanceClass {
+        operator fun invoke() {
+        }
+    }
+
+    // function takes lambda extension function on class RouteHandler as the second parameter
+    private fun routeHandler(path: String, f: RouteHandler.() -> Unit) {
+        f(RouteHandler(Request("POST", "r=56", "json"),
+                Response("", Status(200, ""))))
+    }
+
+    private fun improvedRouteHandler(path: String, f: RouteHandlerImproved.() -> Unit) {
+        f(RouteHandlerImproved(Request("POST", "q=49", "json"),
+                ResponseImproved("", Status(200, ""))))
+    }
+
+
+    private fun lambdaWithReceivers() {
+
+        routeHandler("/index.html") {
+            // we get access to all properties in RouteHandler, bcz RouteHandler became a receiver
+            if(request.query != "") {
+                // process the query
+            }
+            print("LambdaWithReceivers, request.query: ${request.query}")
+            response {
+                status {
+                    code = 404
+                    description = "Not Found"
+                }
+            }
+
+
+            //response.status.code = 404
+            //response.contents = "Not Found"
+        }
+
+        // Store in a variable and call
+        val isOdd: Int.() -> Boolean = { this % 2 == 1 }
+        1.isOdd() // calling as extension function
+
+    }
+
+    private fun invokingInstances() {
+
+        improvedRouteHandler("/index.html") {
+            // we get access to all properties in RouteHandler, bcz RouteHandler became a receiver
+            if(request.query != "") {
+                // process the query
+            }
+            print("InvokingInstances, request.query: ${request.query}")
+            // invoking method "invoke" of ResponseImproved class
+            response {
+                print("InvokingInstances, setup Status")
+                code = 404
+                description = "Not Found"
+            }
+        }
+
+
+        val c = InvokingInstanceClass()
+        c() // we can invoke some functionality on the instance, bcz we overloaded "invoke()" operator
+    }
+
+    //endregion and Invoking
+
     //region Collections
 
     // All read-only collection interfaces are covariant. Covariant - is the ability to change
     // the generic type argument from a class to one of its parents,
     // i.e. assign List<String> to List<Any>
 
+    @SuppressLint("NewApi")
     private fun collections() {
 
-        // Arrays
-        var myArray = Array<Int>(5) { 0 } // Mutable, Fixed Size, all elements initialized with 0
+        // Arrays; also can be created using  arrayOf, arrayOfNulls and emptyArray functions
+        var myArray = Array<Int>(5) { 0 }   // Mutable, Fixed Size, all elements initialized with 0
+        var myArray1 = arrayOf(10, 20, 30)       // Mutable, Fixed Size
+        var myArray2 = arrayOfNulls<Int>(5) // Mutable, Fixed Size, all elements initialized with null
+        var myArray3 = emptyArray<String>()      // Mutable, Fixed Size
+
         myArray[3] = 50
         for (num in myArray) {
             // looping
@@ -652,14 +839,19 @@ class LearnKotlinActivity : AppCompatActivity() {
             // looping
         }
 
+        myArray.reduce { acc, i -> i }
+
+        myArray.fold(100) { acc, i -> i }
 
         // Lists
         val immutableList: List<Int> = listOf(1, 2, 3, 4, 5, 2) // Immutable, Fixed Size
-        var mutableList1 = arrayListOf<String>() // Mutable, No Fixed Size
-        var mutableList2 = ArrayList<Int>()      // Mutable, No Fixed Size
-        var mutableList: MutableList<Int> = mutableListOf(5, 4, 3, 2, 1) // Mutable, No Fixed Size
+        val mutableList1 = arrayListOf<String>() // Mutable, No Fixed Size
+        var mutableList2 = ArrayList<Double>()   // Mutable, No Fixed Size
+        var mutableList3 = arrayListOf(*myArray1) // Mutable, No Fixed Size
+        val mutableList: MutableList<Int> = mutableListOf(5, 4, 3, 2, 1) // Mutable, No Fixed Size
 
         mutableList.add(0)
+        mutableList += 6
         print("mutableList 1st item: ${mutableList.first()}")
         print("mutableList 2nd item: ${mutableList[1]}")
 
@@ -672,8 +864,27 @@ class LearnKotlinActivity : AppCompatActivity() {
 
         immutableList.all { it > 3 } // are all items greater than 3
         immutableList.any { it > 3 } // is there at least one item greater than 3
+        immutableList.none { it == 0 }
         immutableList.count { it > 3 }
         immutableList.find { it > 3 }
+        immutableList.first { it == 2 }
+        immutableList.firstOrNull { it == 1 }
+        immutableList.maxBy { it + 2 }
+        immutableList.sumBy { it - 1 }
+        mutableList2.sumByDouble { abs(it - 4) }
+
+        // divides collection into 2 collections
+        immutableList.partition { it < 10 }
+
+        // divide a collection to several groups by given key
+        mutableList1.groupBy { it.length } // key - the lengths of strings
+        // associate key to one element from collection (not to list like 'groupBy' function)
+        // prefer to use when the key is unique
+        mutableList1.associateBy { it.length }
+
+        // organize couple collections
+        mutableList zip immutableList
+
         val containsThree = 3 in immutableList
 
         print("groupBy: ${immutableList.joinToString(";", "(", ")")}")
@@ -684,7 +895,7 @@ class LearnKotlinActivity : AppCompatActivity() {
 
         // flatMap
         // - transforms each element to a collection according to the lambda function;
-        // - combines (or flattens) several lists into one
+        // - combines (or flattens) several lists into one and returns it
         print("flatMap: ${mutableList1.flatMap { it.toList() }}")
 
         // grouping elements
@@ -711,13 +922,15 @@ class LearnKotlinActivity : AppCompatActivity() {
         // Deconstructing
         val (one, two, three, four, five) = immutableList
 
+        mutableList3.removeAll { it == 0 }
+        mutableList3.count { it > 0 }
 
         // Maps
         val map1 = mapOf<Int, String>()              // Immutable, Fixed Size
         val map2 = mutableMapOf(1 to "Cat", 2 to 33) // Mutable, No Fixed Size
         val map3 = hashMapOf<Int, String>()          // Mutable, No Fixed Size, Not Ordered
         val map4 = HashMap<Int, String>()            // Mutable, No Fixed Size, Not Ordered
-        val map5 = linkedMapOf<Int, String>()        // Mutable, No Fixed Size, Ordered
+        val map5 = linkedMapOf<Int, String>(1 to "One")        // Mutable, No Fixed Size, Ordered
         val map6 = sortedMapOf<Int, String>()        // Mutable, No Fixed Size, TreeMap based on a red-black tree implementation, by default sorted based on keys ordering
         val map = mutableMapOf<Int, Any?>()
 
@@ -735,6 +948,25 @@ class LearnKotlinActivity : AppCompatActivity() {
             // looping through keys
             print("key: $key  value: ${map[key]}")
         }
+
+        val sortedMap: SortedMap<Int, String> = map1.toSortedMap(compareByDescending { it })
+
+        map4.forEach {
+            return@forEach
+        }
+
+        map4.count {
+            it.value.length > 1
+        }
+
+        map4.maxBy {
+            it.value
+        }
+        map4.values.max()
+
+        // Convenient function to store default value if the value is not present for specified key
+        var stringValue = map4.getOrPut(3) { "Default" }
+        stringValue += " value"
 
         // We can use the destructuring declarations syntax for lambda parameters
         map.mapValues { (key, value) -> "$value!" }
@@ -796,10 +1028,10 @@ class LearnKotlinActivity : AppCompatActivity() {
 
         print("Are there all Evens in the list: ${numList.all {  it % 2 == 0 }}")
 
-        val biggerThan3 = numList.filter { it > 3 }
+        val biggerThan3 = numList.filter { it > 3 } // 'filter' creates new intermediate collection
         biggerThan3.forEach { print("biggerThan3: $it") }
 
-        val times7 = numList.map { it * 7 }
+        val times7 = numList.map { it * 7 } // 'map' creates new intermediate collection
         times7.forEach { print("times7: $it") }
 
 
@@ -816,6 +1048,14 @@ class LearnKotlinActivity : AppCompatActivity() {
         // Transformation functions
         val smallNumberSquares = smallNumbers.map { it * it }
         smallNumberSquares.forEach { print("Predicates, smallNumberSquares: $it") }
+
+        val strings = listOf("go", "to", "the", "garden")
+
+
+        var arr = arrayListOf<ArrayList<Int>>()
+        arr.maxBy {
+            it.size
+        }?.size
     }
 
 
@@ -825,34 +1065,90 @@ class LearnKotlinActivity : AppCompatActivity() {
     }
     //endregion
 
-    //region Lazy Evaluation with Sequences
+    //region Sequences, Lazy Evaluation with Sequences
 
 
     // Sequences are the "equivalent" of Java Streams
+
+    private fun sequences() {
+        creatingSequences()
+        lazyEvaluationWithSequences()
+        collectionsVsSequences()
+    }
+
+    private fun creatingSequences() {
+        // Generating Sequence of Infinite integer numbers
+        val numbers = generateSequence(0) { it + 1 } // '0' is the first element of the sequence
+        val sum = numbers.take(30).sum() // take first 30 integer numbers and calculate their sum
+        print("CreatingSequences, sum: $sum")
+
+        // Generate Sequence using "sequence" and "yield" functions
+
+        val sequenceOfNumbers = sequence {
+            var x = 0
+            while (true) {
+                yield(x++) // "yield" allows to suspend execution at some point and then return
+            }
+        }
+        print("CreatingSequences, sequenceOfNumbers: ${sequenceOfNumbers.take(5).toList()}")
+
+        val sequence = sequence {
+            for (i in 1..5) {
+                yield(i) // "yield" allows to suspend execution at some point and then return
+            }
+        }
+        print("CreatingSequences, sequence: ${sequence.joinToString(" ")}")
+    }
+
     private fun lazyEvaluationWithSequences() {
         // Lazy evaluation to existing collections
 
         val elements = 1 .. 1000000000000
         // Processing a big list of values without waiting for the result
-        val output = elements.asSequence().filter { it < 30 }.map { Pair("Yes", it) }
+        val output = elements.asSequence()
+                .filter { it < 30 }         // no intermediate collection is created
+                .map { Pair("Yes", it) }    // no intermediate collection is created
         output.forEach { print("Sequences, output: $it") }
 
         // the sum of first 30 elements
         val otherOutput = elements.asSequence().take(30).sum()
         print("Sequences, otherOutput: $otherOutput")
-
-
-        // Generating Sequence
-        val numbers = generateSequence(1) { it + 10 }
-        val sum = numbers.take(30).sum()
-        print("Sequences, sum: $sum")
-
-
-        // Initializing immutable variable in a lazy way.
-        // It will be initialized when "lazyInit" variable is called
-        val lazyInit: Int by lazy { 10 }
-
     }
+
+    private fun collectionsVsSequences() {
+        fun m(i: Int): Int {
+            print("CollectionsVsSequences  m$i ")
+            return i
+        }
+
+        fun f(i: Int): Boolean {
+            print("CollectionsVsSequences  f$i ")
+            return i % 2 == 0
+        }
+        // Collection, eager evaluation
+        listOf(1, 2, 3, 4)
+                // each operation returns the intermediate result collection;
+                // computes the result in an eager fashion;
+                // we apply 'map' to all elements and then 'filter' to all elements
+                .map(::m)
+                .filter(::f) // output: m1 m2 m3 m4 f1 f2 f3 f4
+
+        print("CollectionsVsSequences  ============================")
+
+        // Sequence, lazy evaluation
+        listOf(1, 2, 3, 4)
+                .asSequence()
+                // operations don't create intermediate result until the result is asked for;
+                // order of operations is important;
+                // we apply 'map' and 'filter' for the 1st element, then for the 2nd and so on
+                .map(::m)
+                .filter(::f)
+                // "toList()" - terminal operation(we explicitly ask for the result);
+                // if it is not called nothing will be printed;
+                // other terminal operations are "first()", "last()", "all()", "any()", "count()" etc.
+                .toList() // output: m1 f1 m2 f2 m3 f3 m4 f4
+    }
+
     //endregion
 
     //region Exceptions
@@ -913,18 +1209,18 @@ class LearnKotlinActivity : AppCompatActivity() {
             print("DataClasses aren't equal")
         }
 
-        val w = Window(2.5, 3.5, Color.GREEN)
+        val window = Window(2.5, 3.5, Color.GREEN)
 
         // use "with" method (part of Kotlin Standard library) to make code cleaner
         // returns Result
-        with(w) {
+        with(window) {
             color = 125
             // init other properties of "w" here
         }
 
         // using "apply" method (part of Kotlin Standard library) to make code cleaner
         // returns Receiver
-        val iBroken = w.apply {
+        val iBroken = window.apply {
             color = 150
             // init other properties of "w" here
         }.isBroken()
@@ -936,9 +1232,43 @@ class LearnKotlinActivity : AppCompatActivity() {
             it.length
         }
 
-        // constructor reference, object is not created yet
+        // Constructor reference, object is not created yet
         val createDog = ::Dog
         val d = createDog("Tril", 34.5, 15.6, "Besh") // creating object
+
+        // Non-Bound Reference to member function; refer to member of the class
+        val widthPredicate = Window::isWider
+        val isWider = widthPredicate(window, 4.0)
+
+        // Bound Reference to member function; refer to specific member of the class
+        val widthPredicateBound = window::isWider
+        val wider = widthPredicateBound(4.0)
+    }
+    //endregion
+
+    //region Sealed Classes
+
+    // Restricts class hierarchy - used for representing restricted class hierarchies (inheritance).
+    // All subclasses must be located in the same file
+
+    sealed class Expr {
+        data class Num(val number: Double) : Expr()
+        data class Sum(val e1: Expr, val e2: Expr) : Expr()
+        object NotANumber : Expr()
+    }
+
+    private fun eval(expr: Expr): Double = when(expr) {
+        is LearnKotlinActivity.Expr.Num -> expr.number
+        is LearnKotlinActivity.Expr.Sum -> eval(expr.e1) + eval(expr.e2)
+        LearnKotlinActivity.Expr.NotANumber -> Double.NaN
+        // the 'else' clause is not required
+    }
+
+
+    private fun sealedClasses() {
+        val sum = eval(Expr.Sum(
+                Expr.Sum(Expr.Num(1.0), Expr.Num(2.0)),
+                Expr.Num(3.0)))
     }
     //endregion
 
@@ -1035,7 +1365,8 @@ class LearnKotlinActivity : AppCompatActivity() {
 
     //region Companion Object
 
-    // Companion Object should be declared within a class
+    // Companion Object should be declared within a class. Can have extension properties.
+    // Each class can have only one Companion Object
     class SomeClass {
 
         // this companion object is converted into the Static fields and methods
@@ -1049,6 +1380,11 @@ class LearnKotlinActivity : AppCompatActivity() {
         }
     }
 
+    // Companion object can be a receiver of extension function
+    private fun SomeClass.Companion.someExtensionFun(): SomeClass {
+        return SomeClass()
+    }
+
 
     private fun companionObject() {
         print("Companion Object, num: ${SomeClass.num}")
@@ -1060,6 +1396,8 @@ class LearnKotlinActivity : AppCompatActivity() {
         // Companion objects are also used as Factories
         val animal = Animal.create("Cat")
 
+        // Companion object Extension function
+        val c = SomeClass.someExtensionFun()
     }
     //endregion
 
@@ -1162,6 +1500,7 @@ class LearnKotlinActivity : AppCompatActivity() {
     private fun generics() {
         val modelRepo = GenericRepository<Model>()
         val model = modelRepo.getById(5)
+
     }
 
     //endregion
@@ -1184,6 +1523,29 @@ class LearnKotlinActivity : AppCompatActivity() {
     }
     //endregion
 
+    //region Operator Overloading
+
+    // using extension function
+    operator fun StringBuilder.plus(other: StringBuilder) {
+        other.forEach { this.append(it) }
+    }
+
+    fun operatorOverloading() {
+        val c1 = OperOverloadingClass(1)
+        val c2 = OperOverloadingClass(2)
+        val c3 = c1 + c2
+        if (c2 > c3) {
+
+        }
+        c3 += c1
+
+        val sb = StringBuilder("Hello")
+        sb + StringBuilder("5")
+        print("OperOverloading, sb: $sb")
+
+    }
+    //endregion
+
     //region Bitwise functions
 
     private fun bitwiseFunctions() {
@@ -1198,23 +1560,41 @@ class LearnKotlinActivity : AppCompatActivity() {
 
     //endregion
 
-    //region STL functions
+    //region stdlib
 
     private fun standardLibraryFunctions() {
-        // apply() - declared on Any,it could be invoked on instances of all types;
-        // use when need to utilize an instance of the object, makes code more readable
+        // apply() - declared on Any, it could be invoked on instances of all types; it makes code more readable;
+        // use when need to utilize an instance of the object (modify properties),
+        // express the chain of calls;
+        // it differs from "run()" and "with()" in that it returns Receiver
+        // ("run()" and "with()" returns some Result)
+        // Takes Lambda with Receiver as an argument and returns Receiver
         val task = Runnable { print("STL apply(), Running task") }
-        Thread(task).apply { isDaemon = true }.start()
+        Thread(task).apply {  isDaemon = true }.start()
 
-        // let() - makes it easier to deal with with a nullable argument that should be passed
+        // also() - use to represent some side effects that are going into code;
+        // similar to "apply()" (returns Receiver), but it takes a regular lambda
+        // (not lambda with a receiver) as an argument
+        val windowOrNull: Window? = null
+        windowOrNull?.apply { color = 0xff0000 }
+                .also {
+                    // call some function, e.g. showWindow(it)
+                }?.isBroken()
+
+        // let() - makes it easier to deal with a nullable argument that should be passed
         // to a function that expects a non-null parameter.
-        // let() will be called if "a" is not null, let function turns "a" into
+        // Takes Regular Lambda as an argument and returns some Result or Lambda
+        // let() will be called if "n" is not null, let function turns "n" into
         // a parameter of the lambda("it").
-        val a: Int? = 5
-        a?.let { multiply3Func(it) } // reads "if 'a' is not null call function multiply3Func(...)"
+        val n: Int? = 5
+        val multiply3FuncResult = n?.let { multiply3Func(it) } // reads "if 'n' is not null call function multiply3Func(...)"
+
+        // Another example with let() function
+        var animal = Dog("Bilya", 15.0, 1.5, "Me")
+        (animal as? Dog)?.let { print("STL This is a dog") }
 
         // with() - allows to call multiple methods on the same object without repeating
-        // the reference to the object
+        // the reference to the object;
         fun alphabet() = with(StringBuilder()) {
             for (letter in 'A'..'Z') {
                 append(letter)
@@ -1223,11 +1603,34 @@ class LearnKotlinActivity : AppCompatActivity() {
             toString()
         }
 
+        // we can use "with()" func to work with member extension functions
+        val window = Window(4.0, 4.0)
+
+        with(window) {
+            "Good.".describe()
+            +"Robust." // unaryPlus operator is implemented in Window class
+        }
+        print("STL window description: ${window.description}")
+
         // run() - combines the use cases of 'with' and 'let'.
-        val outputPath = Paths.get("/sdcard/android").run {
+        // Use to indicate some kind of action or behavior that's kind of just getting fired off.
+        // Takes Lambda with Receiver as an argument and returns some Result or Lambda
+        val outputPath = Paths.get(cacheDir.absolutePath).run {
             val path = resolve("data")
             path.toFile().createNewFile()
             path
+        }
+
+        val c = windowOrNull?.run {
+            color = 0x00ff00
+            color
+        }
+
+
+        // run() - runs the block of code and returns the last expression as the result
+        val res = run {
+            print("STL run() called")
+            "Result"
         }
 
         // lazy() - wraps an expensive function call to be invoked when first required
@@ -1235,32 +1638,73 @@ class LearnKotlinActivity : AppCompatActivity() {
         print("STL lazy(), lazyMultiply: ${lazyMultiply.value}") // multiply3Func function is invoked here
 
         // use() - is similar to the try-with-resources statement in Java;
-        // replaces try-catch-finally block in simple cases
+        // replaces try-catch-finally block in simple cases;
         // object, on which use() is invoked, must implement Closeable interface;
         val input = Files.newInputStream(outputPath)
-        val byte = input.use { it.read() } // it will cleanup resources when the read is done
+        val byte = input.use { /*it.read()*/ } // it will cleanup resources when the read is done
 
         // repeat() - executes function specified number of times;
         // replaces 'for' block for simple operations
-        repeat(5) {print("STL repeat()")}
+        repeat(5) { print("STL repeat()") }
+
 
         // require(), assert(), check() - used to add a limited amount of formal specifications.
+        // assert() - throws an AssertionException and used to ensure that our internal state is consistent.
+        // assert() can be disabled at runtime.
+        // check() - throws an IllegalStateException and also used for internal state consistency.
         // require() - throws an exception and used to ensure that arguments match the input conditions.
         // with require() we can do input validation
         val b: Int = 45
         require(b > 0) { "Number must be positive" }
 
-        // assert() - throws an AssertionException and used to ensure that our internal state is consistent.
-        // assert() can be disabled at runtime.
 
-        // check() - throws an IllegalStateException and also used for internal state consistency.
+        // takeIf() - returns the receiver object if it satisfies the given predicate,
+        // otherwise returns null
+        val someNumber = 42
+        val takenNumber = someNumber.takeIf { it > 10 } // 42
+
+        // takeUnless() - returns the receiver object if it doesn't satisfy the given predicate,
+        // otherwise returns null
+        val someNumber1 = 42
+        val takenNumber1 = someNumber.takeUnless { it > 10 } // null
+
+        // synchronized() - executes block of code holding monitor on the given object (someNumber - in this case)
+        synchronized(someNumber) { print("STL synchronized") }
+
+        // withLock() - executes action under this lock
+        val l: Lock = ReentrantLock()
+        l.withLock {
+            // access the resources protected by this lock
+        }
+
     }
 
     //endregion
 
 
+    //region Coroutines
+    private fun coroutines() {
+        postItem(Any())
 
-    private fun print(text: String) {
-        Log.e("LearnKotlinActivity", text)
+        testAsync()
+
+        // main thread is blocked until 'startRunBlocking()' fun is executed
+        //startRunBlocking()
+
+        testScopes()
+    }
+
+    private fun testCoroutineExamples() {
+        testComputeSum()
+    }
+
+
+
+    //endregion
+
+    companion object {
+        fun print(text: String) {
+            Log.e("LearnKotlinActivity", text)
+        }
     }
 }

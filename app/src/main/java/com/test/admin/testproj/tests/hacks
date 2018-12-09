@@ -12,3 +12,9 @@
         -assumenosideeffects class android.util.Log {
             public static *** d(...);
         }
+
+
+- Android P - Cutout(notch) - phones with cut top area for front camera
+classes: DisplayCutout
+
+

@@ -7,9 +7,12 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.test.admin.testproj.tests.kotlin.interfaces.Eating;
+
+import kotlin.collections.CollectionsKt;
+
 
 public class MainActivity extends ListActivity {
-
 
     private String[] menu = new String[] {
             "Kotlin", "SvgAnimation", "AnimatingToolbarTabLayoutFabStatusBarBgColorsActivity",
@@ -29,6 +32,11 @@ public class MainActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setListAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menu));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -70,9 +78,6 @@ public class MainActivity extends ListActivity {
                 largest = sub;
             }
         }
-        Thread d;
-
-
 
     }
 }

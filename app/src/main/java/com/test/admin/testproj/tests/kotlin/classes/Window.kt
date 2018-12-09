@@ -11,6 +11,10 @@ class Window(height: Double,   //this is a primary constructor with parameters
     private val h: Double = height
     private val w: Double = width
     var color: Int = 0
+    var description: String = ""
+
+    // Lazy property. It will be initialized when it is really needed(first access)
+    val grip: Boolean by lazy { true }
 
     // Read-only property
     val area: Double
@@ -39,6 +43,10 @@ class Window(height: Double,   //this is a primary constructor with parameters
         this.color = color
     }
 
+    operator fun String.unaryPlus() {
+        description = if(description.isEmpty()) this else "$description $this"
+    }
+
     fun isBroken(): Boolean {
         return false
     }
@@ -47,7 +55,19 @@ class Window(height: Double,   //this is a primary constructor with parameters
         multiplyByOne(h.toInt())
     }
 
+    fun isWider(w: Double): Boolean {
+        return this.w > w
+    }
+
+    // Reference to the function
+    fun getWidthPredicate(): (Double) -> Boolean = ::isWider
+
     private fun print(text: String) {
         Log.e(javaClass.simpleName, text)
+    }
+
+    // extension function, visible only inside class instances
+    fun String.describe() {
+        description = if(description.isEmpty()) this else "$description $this"
     }
 }
