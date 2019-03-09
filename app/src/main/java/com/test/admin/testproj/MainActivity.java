@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.test.admin.testproj.tests.kotlin.LearnKotlinActivity;
 import com.test.admin.testproj.tests.kotlin.interfaces.Eating;
 
 import kotlin.collections.CollectionsKt;
@@ -51,6 +52,7 @@ public class MainActivity extends ListActivity {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+
     }
 
     static void diagonalDifference(String s) {
@@ -78,6 +80,5 @@ public class MainActivity extends ListActivity {
                 largest = sub;
             }
         }
-
     }
 }

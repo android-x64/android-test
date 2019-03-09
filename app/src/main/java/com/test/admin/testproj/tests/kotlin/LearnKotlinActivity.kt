@@ -1,24 +1,36 @@
 package com.test.admin.testproj.tests.kotlin
 
 import android.annotation.SuppressLint
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.os.Environment
 import android.util.Log
+import android.widget.Toast
+import com.test.admin.testproj.MainActivity
 import com.test.admin.testproj.R
 import com.test.admin.testproj.tests.kotlin.classes.*
-import com.test.admin.testproj.tests.kotlin.coroutines.examples.testComputeSum
-import com.test.admin.testproj.tests.kotlin.coroutines.postItem
-import com.test.admin.testproj.tests.kotlin.coroutines.startRunBlocking
-import com.test.admin.testproj.tests.kotlin.coroutines.testAsync
-import com.test.admin.testproj.tests.kotlin.coroutines.testScopes
+import com.test.admin.testproj.tests.kotlin.coroutines.testCoroutineExtensions
+import com.test.admin.testproj.tests.kotlin.coroutines.testLaunch
+import com.test.admin.testproj.tests.kotlin.extensions.compose
+import com.test.admin.testproj.tests.kotlin.extensions.runnable
+import com.test.admin.testproj.tests.kotlin.extensions.showActivity
+import com.test.admin.testproj.tests.kotlin.extensions.then
 import com.test.admin.testproj.tests.kotlin.generics.GenericRepository
 import com.test.admin.testproj.tests.kotlin.generics.Model
 import com.test.admin.testproj.tests.kotlin.interfaces.Bird
 import com.test.admin.testproj.tests.kotlin.operator_overloading.OperOverloadingClass
+import com.test.admin.testproj.tests.kotlin.utils.Customer
+import com.test.admin.testproj.tests.kotlin.utils.CustomerName
+import com.test.admin.testproj.tests.kotlin.utils.SomeListener1
 import kotlinx.android.synthetic.main.activity_learn_kotlin.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Runnable
+import stackoverflowTest
 import java.math.BigInteger
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -30,11 +42,16 @@ import kotlin.collections.HashMap
 import kotlin.concurrent.withLock
 import kotlin.math.abs
 
-class LearnKotlinActivity : AppCompatActivity() {
+class LearnKotlinActivity : android.support.v7.app.AppCompatActivity() {
 
     //region Late Initialization
     lateinit var title: String
     //endregion
+
+    interface OnItemDialogClickListener {
+        fun onClick(dialog: String)
+        fun onClick(arg0: Animal, arg1: Int)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,9 +63,13 @@ class LearnKotlinActivity : AppCompatActivity() {
 
         }
 
+
         title = "Learn Kotlin"
         textView.text = title
 
+        button.setOnClickListener {
+
+        }
 
         //variables()
         //strings()
@@ -76,9 +97,10 @@ class LearnKotlinActivity : AppCompatActivity() {
         //typeAlias()
         //functionAlias()
         //bitwiseFunctions()
-        //standardLibraryFunctions()
-        coroutines()
+        //coroutines()
         //testCoroutineExamples()
+        //testExtensionsAndBuilders()
+        testsStackoverflowAnswers()
     }
 
 
@@ -200,7 +222,7 @@ class LearnKotlinActivity : AppCompatActivity() {
         var nullValue2 = funThatCanReturnNull() ?: "Default value" // Elvis operator("?:") - to assign a default value if the value could be null
 
         // With the Elvis operator("?:") we can check "nullValue1" and return method value for null at once.
-        var nullValue3 = nullValue1?.singleOrNull() ?: "Default value"
+        var nullValue3 = nullValue1.singleOrNull() ?: "Default value"
 
 
         // Safe Cast
@@ -419,10 +441,13 @@ class LearnKotlinActivity : AppCompatActivity() {
         // if we already have an array and want to pass its contents to the function,
         // we use the spread operator (prefix the array with *):
         calc(*nums)
+
         // or
         val a = IntArray(3) { it } // initialize array with indexes (a[0]=0, a[1]=1, ...)
         val result = calc(-1, 0, *a, 4)
 
+        // val aaa = arrayOf(1)
+        // calc(*aaa.toIntArray())
 
         var sum = 0
 
@@ -718,6 +743,11 @@ class LearnKotlinActivity : AppCompatActivity() {
         // b - explicit parameter to the function
         // a.greaterThan(b)
         print("Infix function, a greater than b: ${a greaterThan b}")
+
+
+        showActivity(LearnKotlinActivity::class.java) {
+            putString("Key", "Value")
+        }
     }
 
     //endregion
@@ -748,7 +778,7 @@ class LearnKotlinActivity : AppCompatActivity() {
         fun response(response: Response.() -> Unit) {}
     }
 
-    class RouteHandlerImproved(val request: Request, val response: ResponseImproved) {}
+    class RouteHandlerImproved(val request: Request, val response: ResponseImproved)
 
     class InvokingInstanceClass {
         operator fun invoke() {
@@ -831,6 +861,7 @@ class LearnKotlinActivity : AppCompatActivity() {
         var myArray2 = arrayOfNulls<Int>(5) // Mutable, Fixed Size, all elements initialized with null
         var myArray3 = emptyArray<String>()      // Mutable, Fixed Size
 
+
         myArray[3] = 50
         for (num in myArray) {
             // looping
@@ -847,8 +878,14 @@ class LearnKotlinActivity : AppCompatActivity() {
         val immutableList: List<Int> = listOf(1, 2, 3, 4, 5, 2) // Immutable, Fixed Size
         val mutableList1 = arrayListOf<String>() // Mutable, No Fixed Size
         var mutableList2 = ArrayList<Double>()   // Mutable, No Fixed Size
+        var mutableList22 = ArrayList<Double>(10)   // Mutable, No Fixed Size
         var mutableList3 = arrayListOf(*myArray1) // Mutable, No Fixed Size
         val mutableList: MutableList<Int> = mutableListOf(5, 4, 3, 2, 1) // Mutable, No Fixed Size
+
+
+        // we can call `awaitAll()` function on the list of Deferred objects
+        // val deferredList: List<Deferred<String>> = listOf(...)
+        // deferredList.awaitAll()
 
         mutableList.add(0)
         mutableList += 6
@@ -1681,21 +1718,54 @@ class LearnKotlinActivity : AppCompatActivity() {
 
     //endregion
 
+    //region Extensions and Builders
+    private fun testExtensionsAndBuilders() {
+        val runnableCode = runnable {
+            // do something using `this` as the reference to Runnable
+            // e.g. Handler().postDelayed(this, 5000)
+
+        }
+
+        // Function Composition
+        val plus2: (Int) -> Int  = { it + 2 }
+        val times3: (Int) -> Int = { it * 3 }
+        val times3plus2 = plus2 compose times3
+        assert(times3plus2(3) == 11)
+        assert(times3plus2(4) == plus2(times3(4)))
+        // reverse composition
+        assert(times3plus2(3) == (times3 then plus2)(3))
+
+
+
+    }
+    //endregion
 
     //region Coroutines
     private fun coroutines() {
-        postItem(Any())
+        testLaunch()
 
-        testAsync()
+        //testAsync()
 
         // main thread is blocked until 'startRunBlocking()' fun is executed
         //startRunBlocking()
 
-        testScopes()
+        //testScopes()
+
+        //testSuspendFunctions()
+
     }
 
     private fun testCoroutineExamples() {
-        testComputeSum()
+        //testComputeSum()
+        testCoroutineExtensions()
+
+    }
+
+
+    private fun testsStackoverflowAnswers() {
+        stackoverflowTest()
+
+
     }
 
 

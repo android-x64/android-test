@@ -1,8 +1,6 @@
 package com.test.admin.testproj.tests.kotlin.generics
 
-import com.test.admin.testproj.tests.kotlin.LearnKotlinActivity
 import java.io.Serializable
-import java.util.*
 
 // "T: Entity" - single upper-bound restriction on the type parameter
 class SingleUpperBoundRestrictedRepository<T: Entity> {

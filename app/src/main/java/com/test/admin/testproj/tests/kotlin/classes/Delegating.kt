@@ -1,10 +1,8 @@
 package com.test.admin.testproj.tests.kotlin.classes
 
 import android.util.Log
-import com.test.admin.testproj.tests.kotlin.classes.SigletonClass.property
 import com.test.admin.testproj.tests.kotlin.interfaces.Eating
 import kotlin.properties.Delegates
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 // Class delegation

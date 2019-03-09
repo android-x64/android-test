@@ -1,6 +1,6 @@
 package com.test.admin.testproj.tests.kotlin.classes;
 
-import com.test.admin.testproj.tests.kotlin.MyUtils;
+import com.test.admin.testproj.tests.kotlin.utils.MyUtils;
 
 public class JavaClass {
     public JavaClass() {

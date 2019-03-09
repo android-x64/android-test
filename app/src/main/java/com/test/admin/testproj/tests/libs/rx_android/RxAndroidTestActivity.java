@@ -14,7 +14,6 @@ import com.test.admin.testproj.tests.libs.rx_android.examples.RxExample_1;
 import com.test.admin.testproj.tests.libs.rx_android.models.Beer;
 import com.test.admin.testproj.tests.libs.rx_android.utils.Network;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 

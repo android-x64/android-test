@@ -2,6 +2,7 @@ package com.test.admin.testproj;
 
 import android.app.Activity;
 import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import com.test.admin.testproj.tests.libs.dagger2.with_dagger2.CoffeeMakerComponent;
 import com.test.admin.testproj.tests.libs.dagger2.with_dagger2.DaggerCoffeeMakerComponent;
@@ -17,7 +18,7 @@ import dagger.android.HasActivityInjector;
 /**
  * Created on 13.08.2015.
  */
-public class App extends Application implements HasActivityInjector {
+public class App extends MultiDexApplication implements HasActivityInjector {
 
     @Inject
     DispatchingAndroidInjector<Activity> activityInjector;

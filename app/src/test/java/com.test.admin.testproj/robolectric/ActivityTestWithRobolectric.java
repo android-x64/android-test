@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
  * Robolectric executes on the JVM, not on the device or Emulator.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
+@Config(/*constants = BuildConfig.class*/)
 public class ActivityTestWithRobolectric {
 
     private InstrumentedActivity mActivity;

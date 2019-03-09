@@ -9,18 +9,21 @@ import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import java.util.concurrent.CompletableFuture
 
-private fun startLongAsyncOperation1(v: Int) =
-        GlobalScope.async {
+// async - coroutine builder function, intended for concurrent async operations.
+// Usage - when need to launch two or more async operations in parallel
 
-            // line 3 (v=10); here is another background thread is created -> Thread[DefaultDispatcher-worker-3,5,main]
-            // this line may (and may not) be executed before line 2
+private fun startLongAsyncOperation1(v: Int) = GlobalScope.async {
 
-            // line 4 (v=5);  here is another background thread is created -> Thread[DefaultDispatcher-worker-2,5,main]
-            // this line also may (and may not) be executed before line 2
+    // line 3 (v=10); here is another background thread is created -> Thread[DefaultDispatcher-worker-3,5,main]
+    // this line may (and may not) be executed before line 2
 
-            Thread.sleep(1000)
-            "Result $v"
-        }
+    // line 4 (v=5);  here is another background thread is created -> Thread[DefaultDispatcher-worker-2,5,main]
+    // this line also may (and may not) be executed before line 2
+
+    Thread.sleep(1000)
+    "Result $v"
+
+}
 
 private fun startLongAsyncOperation2(v: Int) =
         CompletableFuture.supplyAsync {

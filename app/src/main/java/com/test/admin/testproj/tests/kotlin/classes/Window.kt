@@ -1,7 +1,7 @@
 package com.test.admin.testproj.tests.kotlin.classes
 
 import android.util.Log
-import com.test.admin.testproj.tests.kotlin.multiply as multiplyByOne
+import com.test.admin.testproj.tests.kotlin.utils.multiply as multiplyByOne
 
 // In this case "height" and "width" are not properties, they are just value passed to the constructor.
 // To make them as properties we need to add "var" or "val" keywords

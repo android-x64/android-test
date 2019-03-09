@@ -5,18 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.LabeledIntent;
 import android.os.Bundle;
-import android.view.animation.LayoutAnimationController;
 
 import com.test.admin.testproj.R;
 import com.test.admin.testproj.tests.libs.rx_android_examples.example1.User;
 import com.test.admin.testproj.tests.libs.rx_android_examples.example1.UserManager;
 import com.test.admin.testproj.tests.libs.rx_android_examples.example1.UserManagerImpl;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;

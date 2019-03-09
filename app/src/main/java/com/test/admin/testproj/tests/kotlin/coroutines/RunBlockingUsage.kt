@@ -1,6 +1,9 @@
 package com.test.admin.testproj.tests.kotlin.coroutines
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 fun startRunBlocking() = runBlocking {
     // here is main thread -> Thread[main,5,main]
